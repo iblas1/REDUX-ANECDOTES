@@ -1,3 +1,5 @@
+import { combineReducers, createStore } from "redux";
+
 const anecdotesAtStart = [
   "If it hurts, do it more often",
   "Adding manpower to a late software project makes it later!",
@@ -62,4 +64,11 @@ export const newAnecdote = (data) => {
   };
 };
 
-export default reducer;
+const store = createStore(reducer);
+// to combine reducer just use
+// const reducer = combineReducers({
+//   name1: 'firtReducer',
+//   name2: '2nd reducer'
+// })
+
+export default store;
