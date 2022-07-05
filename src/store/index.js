@@ -1,6 +1,6 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { getAll, createAnecdote } from "../services/anecodotes";
+import { getAll, createAnecdote, updateAnecdote } from "../services/anecodotes";
 
 const anecdotesAtStart = [
   "If it hurts, do it more often",
@@ -57,33 +57,58 @@ const anecdoteSlice = createSlice({
 });
 
 export const getAnecdotes = () => {
-  return (dispatch) => {
-    getAll()
-      .then((returnedAnecdotes) => {
-        console.log(returnedAnecdotes);
-        dispatch(anecdoteActions.replaceAnecdotes(returnedAnecdotes));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  return async (dispatch) => {
+    const allAnecdotes = await getAll();
+    console.log(allAnecdotes);
+    dispatch(anecdoteActions.replaceAnecdotes(allAnecdotes));
+
+    //using .then below
+    // getAll()
+    //   .then((returnedAnecdotes) => {
+    //     console.log(returnedAnecdotes);
+    //     dispatch(anecdoteActions.replaceAnecdotes(returnedAnecdotes));
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
   };
 };
 
 export const sendAnecdotes = (anecdote) => {
-  return (dispatch) => {
+  return async (dispatch) => {
     const newAnecdote = {
       content: anecdote,
       // id: getId(),
       votes: 0,
     };
-    createAnecdote(newAnecdote)
-      .then((returnedAnecdote) => {
-        console.log(returnedAnecdote);
-        dispatch(anecdoteActions.newAnecdote(returnedAnecdote));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+
+    const createdAnecdote = await createAnecdote(newAnecdote);
+    console.log(createdAnecdote);
+    dispatch(anecdoteActions.newAnecdote(createdAnecdote));
+
+    //using .then below
+    // createAnecdote(newAnecdote)
+    //   .then((returnedAnecdote) => {
+    //     console.log(returnedAnecdote);
+    //     dispatch(anecdoteActions.newAnecdote(returnedAnecdote));
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
+  };
+};
+
+export const updateVote = (id, votedAnecdote) => {
+  const changedAnecdote = {
+    ...votedAnecdote,
+    votes: votedAnecdote.votes + 1,
+  };
+  return async (dispatch) => {
+    const updatedAnecdocte = await updateAnecdote(id, changedAnecdote);
+    if (updatedAnecdocte) {
+      const allAnecdotes = await getAll();
+      dispatch(anecdoteActions.replaceAnecdotes(allAnecdotes));
+    }
   };
 };
 
@@ -115,6 +140,15 @@ const notificationSlice = createSlice({
     },
   },
 });
+
+export const notify = (message, seconds) => {
+  return (dispatch) => {
+    dispatch(notifActions.setNotification(message));
+    setTimeout(() => {
+      dispatch(notifActions.setNotification(""));
+    }, seconds * 1000);
+  };
+};
 
 const filterSlice = createSlice({
   name: "filter",

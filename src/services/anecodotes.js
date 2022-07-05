@@ -12,4 +12,8 @@ const createAnecdote = (obj) => {
   return response.then((res) => res.data);
 };
 
-export { getAll, createAnecdote };
+const updateAnecdote = (id, obj) => {
+  const response = axios.put(`${url}/${id}`, obj);
+  return response.then((res) => res.data);
+};
+export { getAll, createAnecdote, updateAnecdote };

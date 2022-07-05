@@ -12,6 +12,7 @@ const App = () => {
   useEffect(() => {
     dispatch(getAnecdotes());
   }, []);
+
   return (
     <div>
       {notification && <Notification />}
